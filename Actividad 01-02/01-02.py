@@ -8,7 +8,6 @@ CONSUMERS = 5
 ITEMS = 10
 
 aux = list()
-
 queue = queue.Queue(maxsize=10)
 condition = threading.Condition()
 restantes = threading.Semaphore(ITEMS)
