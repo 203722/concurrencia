@@ -123,10 +123,10 @@ class Client(threading.Thread):
     def start(self):
         time.sleep(0.2)
         if self.reservation:
-            monitor.reservacion(self)
+            restaurante.reservacion(self)
         else:
-            monitor.llegada(self)
-        monitor.comiendo()
+            restaurante.llegada(self)
+        restaurante.comiendo()
 
 
 class Waiter(threading.Thread):
@@ -138,7 +138,7 @@ class Waiter(threading.Thread):
         Waiter.count += 1
 
     def start(self):
-        monitor._serve(self)
+        restaurante._serve(self)
 
 
 class Chef(threading.Thread):
@@ -150,7 +150,7 @@ class Chef(threading.Thread):
         Chef.count += 1
 
     def start(self):
-        monitor.cocinar(self)
+        restaurante.cocinar(self)
 
 def main():
     clientes = []
@@ -172,5 +172,5 @@ def main():
         chef1.start()
 
 if __name__ == '__main__':
-    monitor = restaurant()
+    restaurante = restaurant()
     main()
