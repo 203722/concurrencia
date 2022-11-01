@@ -14,7 +14,6 @@ class restaurant():
     mesero_E = threading.Condition()
     chef_A = threading.Condition()
     condicion_R = threading.Condition()
-
     rest = Queue(capacidad)
     ordenes = Queue()
     comida = Queue()
@@ -30,7 +29,6 @@ class restaurant():
 
         self.mutex.acquire()
         self.entrada(clientes)
-
         self.condicion_R.notify()
         self.condicion_R.release()
 
@@ -58,7 +56,6 @@ class restaurant():
             self.mesero_E.acquire()
             self.mesero_E.notify()
             self.mesero_E.release()
-
             self.mutex.release()
             self.capacidad_I.release()
 
@@ -71,7 +68,7 @@ class restaurant():
                 self.mesero_E.wait()
             else:
                 clientes = self.rest.get()
-                if clientes.served == False:
+                if clientes.servido == False:
                     print(
                         f"el mesero {str(mesero_X.id)} atiende al cliente {str(clientes.id)}")
                     print(
@@ -82,7 +79,7 @@ class restaurant():
                     self.chef_A.notify()
                     self.chef_A.release()
 
-                    clientes.served = True
+                    clientes.servido = True
                     self.mesero_E.release()
                 else:
                     self.mesero_E.release()
@@ -92,15 +89,15 @@ class restaurant():
             time.sleep(1)
             self.chef_A.acquire()
             if self.ordenes.empty():
-                print(f"COCINERO {str(chef.id)} está descansando")
+                print(f"el cocinero {str(chef.id)} está descansando")
                 self.chef_A.wait()
             else:
-                order = self.ordenes.get()
+                orden = self.ordenes.get()
                 print(
-                    f"COCINERO {str(chef.id)} está cocinando el pedido de el cliente {order}")
+                    f"el cocinero {str(chef.id)} está cocinando el pedido de el cliente {orden}")
                 time.sleep(3)
-                print(f"el pedido de el cliente {order} está listo")
-                self.comida.put(order)
+                print(f"el pedido de el cliente {orden} está listo")
+                self.comida.put(orden)
                 self.chef_A.release()
     def comiendo(self):
         time.sleep(1)
@@ -110,15 +107,26 @@ class restaurant():
             time.sleep(4)
             print(f"el cliente {clientes} terminó de comer")
             print(f"el cliente {clientes} se fué")
+class Chef(threading.Thread):
+    aux = 1
+
+    def __init__(self):
+        super(Chef, self).__init__()
+        self.id = Chef.aux
+        Chef.aux += 1
+
+    def start(self):
+        restaurante.cocinar(self)
+            
 class Client(threading.Thread):
-    count = 1
-    served = False
+    aux = 1
+    servido = False
 
     def __init__(self, reservation):
         super(Client, self).__init__()
-        self.id = Client.count
+        self.id = Client.aux
         self.reservation = reservation
-        Client.count += 1
+        Client.aux += 1
 
     def start(self):
         time.sleep(0.2)
@@ -128,40 +136,27 @@ class Client(threading.Thread):
             restaurante.llegada(self)
         restaurante.comiendo()
 
-
-class Waiter(threading.Thread):
-    count = 1
+class mesero(threading.Thread):
+    aux = 1
 
     def __init__(self):
-        super(Waiter, self).__init__()
-        self.id = Waiter.count
-        Waiter.count += 1
+        super(mesero, self).__init__()
+        self.id = mesero.aux
+        mesero.aux += 1
 
     def start(self):
         restaurante._serve(self)
 
-
-class Chef(threading.Thread):
-    count = 1
-
-    def __init__(self):
-        super(Chef, self).__init__()
-        self.id = Chef.count
-        Chef.count += 1
-
-    def start(self):
-        restaurante.cocinar(self)
-
 def main():
+    chefs = []
     clientes = []
     meseros = []
-    chefs = []
-    
+
     for i in range(total_clientes):
-        reservation_luck = bool(random.choice([0, 0, 1]))
-        clientes.append(Client(reservation_luck))
+        reservacion_S = bool(random.choice([0, 0, 1]))
+        clientes.append(Client(reservacion_S))
     for i in range(meseros_total):
-        meseros.append(Waiter())
+        meseros.append(mesero())
     for i in range(chef):
         chefs.append(Chef())
     for cliente in clientes:
