@@ -10,102 +10,102 @@ reservaciones = int(capacidad * 0.2)
 
 class restaurant():
     mutex = threading.Lock()
-    capacity_condition = threading.Condition()
-    waiter_condition = threading.Condition()
-    chef_condition = threading.Condition()
-    reservation_condition = threading.Condition()
+    capacidad_I = threading.Condition()
+    mesero_E = threading.Condition()
+    chef_A = threading.Condition()
+    condicion_R = threading.Condition()
 
-    restaurant_queue = Queue(capacidad)
-    orders = Queue()
-    food = Queue()
-    reservation_queue = Queue(reservaciones)
+    rest = Queue(capacidad)
+    ordenes = Queue()
+    comida = Queue()
+    cola_R = Queue(reservaciones)
 
     def __init__(self):
         super(restaurant, self).__init__()
 
     def llegada(self, clientes):
-        self.reservation_condition.acquire()
+        self.condicion_R.acquire()
         print(f"el cliente {str(clientes.id)} llegó al restaurante")
         time.sleep(1)
 
         self.mutex.acquire()
         self.entrada(clientes)
 
-        self.reservation_condition.notify()
-        self.reservation_condition.release()
+        self.condicion_R.notify()
+        self.condicion_R.release()
 
     def reservacion(self, clientes):
-        self.reservation_condition.acquire()
-        if self.reservation_queue.full():
-            self.reservation_condition.wait()
+        self.condicion_R.acquire()
+        if self.cola_R.full():
+            self.condicion_R.wait()
             self.mutex.acquire()
             self.entrada(clientes)
-            self.reservation_condition.notify()
-            self.reservation_condition.release()
-            self.reservation_queue.get()
+            self.condicion_R.notify()
+            self.condicion_R.release()
+            self.cola_R.get()
 
     def entrada(self, clientes):
-        self.capacity_condition.acquire()
-        if self.restaurant_queue.full():
+        self.capacidad_I.acquire()
+        if self.rest.full():
             print(f"el cliente {str(clientes.id)} está esperando una mesa")
-            self.capacity_condition.wait()
+            self.capacidad_I.wait()
         else:
             print(f"el cliente {str(clientes.id)} entró al restaurante")
             time.sleep(2)
-            self.restaurant_queue.put(clientes)
+            self.rest.put(clientes)
             print(f"el cliente {str(clientes.id)} se le a asignado una mesa")
 
-            self.waiter_condition.acquire()
-            self.waiter_condition.notify()
-            self.waiter_condition.release()
+            self.mesero_E.acquire()
+            self.mesero_E.notify()
+            self.mesero_E.release()
 
             self.mutex.release()
-            self.capacity_condition.release()
+            self.capacidad_I.release()
 
-    def _serve(self, waiter):
+    def _serve(self, mesero_X):
         while True:
             time.sleep(2)
-            self.waiter_condition.acquire()
-            if self.restaurant_queue.empty():
-                print(f"el mesero {str(waiter.id)} está descansando")
-                self.waiter_condition.wait()
+            self.mesero_E.acquire()
+            if self.rest.empty():
+                print(f"el mesero {str(mesero_X.id)} está descansando")
+                self.mesero_E.wait()
             else:
-                clientes = self.restaurant_queue.get()
+                clientes = self.rest.get()
                 if clientes.served == False:
                     print(
-                        f"el mesero {str(waiter.id)} atiende al cliente {str(clientes.id)}")
+                        f"el mesero {str(mesero_X.id)} atiende al cliente {str(clientes.id)}")
                     print(
                         f"la orden del cliente {str(clientes.id)} se añadió a la cola")
-                    self.orders.put(clientes.id)
+                    self.ordenes.put(clientes.id)
 
-                    self.chef_condition.acquire()
-                    self.chef_condition.notify()
-                    self.chef_condition.release()
+                    self.chef_A.acquire()
+                    self.chef_A.notify()
+                    self.chef_A.release()
 
                     clientes.served = True
-                    self.waiter_condition.release()
+                    self.mesero_E.release()
                 else:
-                    self.waiter_condition.release()
+                    self.mesero_E.release()
 
     def cocinar(self, chef):
         while True:
             time.sleep(1)
-            self.chef_condition.acquire()
-            if self.orders.empty():
+            self.chef_A.acquire()
+            if self.ordenes.empty():
                 print(f"COCINERO {str(chef.id)} está descansando")
-                self.chef_condition.wait()
+                self.chef_A.wait()
             else:
-                order = self.orders.get()
+                order = self.ordenes.get()
                 print(
                     f"COCINERO {str(chef.id)} está cocinando el pedido de el cliente {order}")
                 time.sleep(3)
                 print(f"el pedido de el cliente {order} está listo")
-                self.food.put(order)
-                self.chef_condition.release()
+                self.comida.put(order)
+                self.chef_A.release()
     def comiendo(self):
         time.sleep(1)
-        if not self.food.empty():
-            clientes = self.food.get()
+        if not self.comida.empty():
+            clientes = self.comida.get()
             print(f"el cliente {clientes} está comiendo")
             time.sleep(4)
             print(f"el cliente {clientes} terminó de comer")
