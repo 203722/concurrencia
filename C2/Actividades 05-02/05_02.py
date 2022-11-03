@@ -1,13 +1,12 @@
-from queue import Queue
-import threading
+from queue import Queue                        #Marcos alejandro shilon gallegos - 203459
+import threading                               #Jose Adrian Batalla Cruz - 203722
 import time
 import random
 
 CAPACIDAD = 15
 CLIENTES = 20
-RESERVACIONES = round(CAPACIDAD*0.20)
-MESEROS = round(CAPACIDAD * 0.10)
-COCINEROS = round(CAPACIDAD * 0.10)
+RESERVACIONES = round(CAPACIDAD*0.2)
+MESEROS = COCINEROS = round(CAPACIDAD * 0.1)
 
 class Restaurante():
   mutex = threading.Lock()
@@ -39,7 +38,7 @@ class Restaurante():
     else:
             self.reservaciones.put(cliente)
             print(f"CLIENTE {str(cliente.id)} ingresó a la cola, con reservación")
-            time.sleep(4)
+            time.sleep(5)
             print(f"CLIENTE {str(cliente.id)} llegó al restaurante, con reservación")
             time.sleep(1)
 
@@ -68,7 +67,7 @@ class Restaurante():
 
   def ordenar(self, mesero):
     while True:
-      time.sleep(0.5)
+      time.sleep(1)
       self.mesero.acquire()
       if self.adentro.empty():
         print(f"Mesero {mesero.id} está descansando")
@@ -123,7 +122,7 @@ class Cliente(threading.Thread):
     Cliente.conta += 1
 
   def run(self):
-    time.sleep(0.2)
+    time.sleep(1)
     if self.reservacion:
       restaurante.reservacion(self)
     else:
