@@ -37,13 +37,13 @@ class Restaurante():
             self.clientes_reservacion.wait()
     else:
             self.reservaciones.put(cliente)
-            print(f"CLIENTE {str(cliente.id)} ingresó a la cola, con reservación")
+            print(f"Cliente {str(cliente.id)} ingresó a la cola, con reservación")
             time.sleep(5)
-            print(f"CLIENTE {str(cliente.id)} llegó al restaurante, con reservación")
+            print(f"Cliente {str(cliente.id)} llegó al restaurante, con reservación")
             time.sleep(1)
 
             self.mutex.acquire()
-            self._enter(cliente)
+            self.entrar(cliente)
             self.reservaciones.get()
 
             self.clientes_reservacion.notify()
@@ -96,9 +96,9 @@ class Restaurante():
                 self.cocinero.wait()
             else:
                 order = self.ordenes.get()
-                print(f"COCINERO {str(cocinero.id)} está cocinando el pedido de CLIENTE {order}")
+                print(f"COCINERO {str(cocinero.id)} está cocinando el pedido de Cliente {order}")
                 time.sleep(3)
-                print(f"el pedido de CLIENTE {order} está listo")
+                print(f"el pedido de Cliente {order} está listo")
                 self.comidas.put(order)
                 self.cocinero.release()
 
@@ -106,10 +106,10 @@ class Restaurante():
     time.sleep(1)
     if not self.comidas.empty():
             cliente = self.comidas.get()
-            print(f"CLIENTE {cliente} está comiendo")
+            print(f"Cliente {cliente} está comiendo")
             time.sleep(4)
-            print(f"CLIENTE {cliente} terminó de comer")
-            print(f"CLIENTE {cliente} se fué del restaurante")
+            print(f"Cliente {cliente} terminó de comer")
+            print(f"Cliente {cliente} se fué del restaurante")
 
 class Cliente(threading.Thread):
   conta = 1
@@ -120,7 +120,7 @@ class Cliente(threading.Thread):
     self.id = Cliente.conta
     self.reservacion = reservacion
     Cliente.conta += 1
-
+    
   def run(self):
     time.sleep(1)
     if self.reservacion:
