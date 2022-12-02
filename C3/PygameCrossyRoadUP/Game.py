@@ -13,7 +13,6 @@ class Cat(p.sprite.Sprite, threading.Thread):
         self.height = 65
         
         p.init()
-
         self.est1 = p.image.load('./Img/est1.png')
         self.est2 = p.image.load('./Img/est2.png')
         self.est3 = p.image.load('./Img/est3.png')
