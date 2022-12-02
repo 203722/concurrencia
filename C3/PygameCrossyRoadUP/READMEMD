@@ -1,17 +1,11 @@
 
 # Pasos para Ejecutar el juego
 
-### 1.- Abrir la carpeta Pygame Crossy Road UP
+### 1.- Abrir la carpeta PygameCrossyRoadUP
     Esto debido a que las imagenes no se encontraran si son abiertas con otra carpeta por ejemplo "C3/Pygame Crossy Road".
 
-### 2.- Abrir una nueva terminal y ejecutar client.py
-    El objetivo de esto es cargar el juego y el cliente para que se una un jugador a la cola.
-
-### 3.- Abrir de nuevo una terminal y ejecutar nuevamente client.py
-    Esto es para completar el emparejamiento y así tener a los dos jugadores en la cola para comenzar el juego.
-
-### 4.- Presionar "Ready" en ambas ventanas del cliente
-    Esto cambiará a color verde al usuario indicando que está listo para iniciar el juego.
+### 2.- En dado caso que no se ejecute el juego correctamente verificar lo siguiente
+    - Que la ruta termine con "concurrente-develop\concurrencia\C3\PygameCrossyRoadUP>" y no con "concurrente-develop\concurrencia\C3\"
 
 # Aspectos a tener en cuenta
 
@@ -19,4 +13,4 @@
 #### PyGame
      pip install pygame
 
-#### Python 3.10
+#### Python 3.10.7
