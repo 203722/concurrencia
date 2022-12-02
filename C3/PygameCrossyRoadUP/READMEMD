@@ -8,6 +8,9 @@
 ### 2.- En dado caso que no se ejecute el juego correctamente verificar lo siguiente
     - Que la ruta termine con "concurrente-develop\concurrencia\C3\PygameCrossyRoadUP>" y no con "concurrente-develop\concurrencia\C3\".
 
+### 3.- Una vez en la carpeta para ejecutar el juego ejecute el siguiente comando
+    py 'Game.py'
+
 # Aspectos a tener en cuenta
 
 ### Librerias instaladas
