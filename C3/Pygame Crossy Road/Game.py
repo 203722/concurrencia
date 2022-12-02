@@ -2,21 +2,22 @@ import pygame as p
 import time
 import threading
 
-mutex = threading.Lock()
-
-class Cat(p.sprite.Sprite):
+class Cat(p.sprite.Sprite, threading.Thread):
     def __init__(self):
-        super().__init__()
+        super(Cat, self).__init__()
+        threading.Thread.__init__(self)
         self.x = 50
         self.y = HEIGHT / 2
         self.vel = 4
         self.width = 65
         self.height = 65
+        
+        p.init()
 
-        self.est1 = p.image.load('est1.png')
-        self.est2 = p.image.load('est2.png')
-        self.est3 = p.image.load('est3.png')
-        self.est4 = p.image.load('est4.png')
+        self.est1 = p.image.load('./Img/est1.png')
+        self.est2 = p.image.load('./Img/est2.png')
+        self.est3 = p.image.load('./Img/est3.png')
+        self.est4 = p.image.load('./Img/est4.png')
         self.est1 = p.transform.scale(self.est1, (self.width, self.height))
         self.est2 = p.transform.scale(self.est2, (self.width, self.height))
         self.est3 = p.transform.scale(self.est3, (self.width, self.height))
@@ -67,70 +68,9 @@ class Cat(p.sprite.Sprite):
         car_check = p.sprite.spritecollide(self, car_group, False, p.sprite.collide_mask)
         if car_check:
             explosion.explode(self.x, self.y)
-
-class Cat2(p.sprite.Sprite):
-    def __init__(self):
-        super().__init__()
-        self.x = 50
-        self.y = HEIGHT / 2
-        self.vel = 4
-        self.width = 65
-        self.height = 65
-
-        self.estu1 = p.image.load('estu1.png')
-        self.estu2 = p.image.load('estu2.png')
-        self.estu3 = p.image.load('estu3.png')
-        self.estu4 = p.image.load('estu4.png')
-        self.estu1 = p.transform.scale(self.estu1, (self.width, self.height))
-        self.estu2 = p.transform.scale(self.estu2, (self.width, self.height))
-        self.estu3 = p.transform.scale(self.estu3, (self.width, self.height))
-        self.estu4 = p.transform.scale(self.estu4, (self.width, self.height))
         
-        self.image = self.estu1
-        self.rect = self.image.get_rect()
-        self.mask = p.mask.from_surface(self.image)
 
-    def update(self):
-        self.movement()
-        self.correction()
-        self.checkCollision()
-        self.rect.center = (self.x, self.y)
 
-    def movement(self):
-        keys = p.key.get_pressed()
-        if keys[p.K_a]:
-            self.x -= self.vel
-            self.image = self.estu2
-
-        elif keys[p.K_d]:
-            self.x += self.vel
-            self.image = self.estu1
-
-        if keys[p.K_w]:
-            self.y -= self.vel
-            self.image = self.estu4
-
-        elif keys[p.K_s]:
-            self.y += self.vel
-            self.image = self.estu3
-
-    def correction(self):
-        if self.x - self.width / 2 < 0:
-            self.x = self.width / 2
-
-        elif self.x + self.width / 2 > WIDTH:
-            self.x = WIDTH - self.width / 2
-
-        if self.y - self.height / 2 < 0:
-            self.y = self.height / 2
-
-        elif self.y + self.height / 2 > HEIGHT:
-            self.y = HEIGHT - self.height / 2
-
-    def checkCollision(self):
-        car_check = p.sprite.spritecollide(self, car_group, False, p.sprite.collide_mask)
-        if car_check:
-            explosion.explode(self.x, self.y)
 
 class Car(p.sprite.Sprite, threading.Thread):
     def __init__(self, number):
@@ -138,12 +78,12 @@ class Car(p.sprite.Sprite, threading.Thread):
         threading.Thread.__init__(self)
         if number == 1:
             self.x = 190
-            self.image = p.image.load('Slow Car.png')
+            self.image = p.image.load('./Img/Slow Car.png')
             self.vel = -4
 
         else:
             self.x = 460
-            self.image = p.image.load('Fast Car.png')
+            self.image = p.image.load('./Img/Fast Car.png')
             self.vel = 5
 
         self.y = HEIGHT / 2
@@ -172,9 +112,10 @@ class Car(p.sprite.Sprite, threading.Thread):
 class Screen(p.sprite.Sprite, threading.Thread):
     def __init__(self):
         super().__init__()
-        self.img1 = p.image.load('Scene.png')
-        self.img2 = p.image.load('You Win.png')
-        self.img3 = p.image.load('You lose.png')
+        threading.Thread.__init__(self)
+        self.img1 = p.image.load('./Img/Scene.png')
+        self.img2 = p.image.load('./Img/You Win.png')
+        self.img3 = p.image.load('./Img/You lose.png')
 
         self.img1 = p.transform.scale(self.img1, (WIDTH, HEIGHT))
         self.img2 = p.transform.scale(self.img2, (WIDTH, HEIGHT))
@@ -190,18 +131,19 @@ class Screen(p.sprite.Sprite, threading.Thread):
         self.rect.topleft = (self.x, self.y)
 
 
-class Flag(p.sprite.Sprite):
+class Flag(p.sprite.Sprite, threading.Thread):
     def __init__(self, number):
         super().__init__()
+        threading.Thread.__init__(self)
         self.number = number
 
         if self.number == 1:
-            self.image = p.image.load('qr.png')
+            self.image = p.image.load('./Img/qr.png')
             self.visible = False
             self.x = 50
 
         else:
-            self.image = p.image.load('quesadilla.png')
+            self.image = p.image.load('./Img/quesadilla.png')
             self.visible = True
             self.x = 580
 
@@ -242,7 +184,7 @@ class Explosion(object):
         self.costume = 1
         self.width = 140
         self.height = 140
-        self.image = p.image.load('explosion' + str(self.costume) + '.png')
+        self.image = p.image.load('./Img/explosion' + str(self.costume) + '.png')
         self.image = p.transform.scale(self.image, (self.width, self.height))
 
     def explode(self, x, y):
@@ -251,7 +193,7 @@ class Explosion(object):
         DeleteCat()
 
         while self.costume < 9:
-            self.image = p.image.load('explosion' + str(self.costume) + '.png')
+            self.image = p.image.load('./Img/explosion' + str(self.costume) + '.png')
             self.image = p.transform.scale(self.image, (self.width, self.height))
             win.blit(self.image, (x, y))
             p.display.update()
@@ -303,7 +245,7 @@ def DeleteCat():
     global cat
 
     cat.kill()
-    cat2.kill()
+
     screen_group.draw(win)
     car_group.draw(win)
     flag_group.draw(win)
@@ -320,17 +262,6 @@ def DeleteOtherItems():
     flag_group.empty()
     flags.clear()
 
-def main():
-    
-    arreglo = []
-
-    for i in range(1):
-        arreglo.append(Car(0))
-
-    for t in arreglo:
-        t.start()
-        print('Thread iniciado')
-
 def EndScreen(n):
     global gameOn
 
@@ -342,11 +273,20 @@ def EndScreen(n):
     elif n == 1:
         bg.image = bg.img2
 
-
 WIDTH = 640
 HEIGHT = 480
 
-p.init()
+def main():
+    
+    arreglo = []
+    for i in range(1):
+        arreglo.append(Cat())
+        i+1
+
+    for t in arreglo:
+        t.start()
+        print('Thread iniciado')
+main()
 
 win = p.display.set_mode((WIDTH, HEIGHT))
 p.display.set_caption('UPChiapas')
@@ -360,9 +300,8 @@ screen_group = p.sprite.Group()
 screen_group.add(bg)
 
 cat = Cat()
-cat2= Cat2()
 cat_group = p.sprite.Group()
-cat_group.add(cat,cat2)
+cat_group.add(cat)
 
 slow_car = Car(1)
 fast_car = Car(2)
@@ -383,9 +322,7 @@ while run:
     clock.tick(60)
     for event in p.event.get():
         if event.type == p.QUIT:
-            run = False
-            
-    main()
+            run = False   
     screen_group.draw(win)
 
     ScoreDisplay()
@@ -402,4 +339,3 @@ while run:
     screen_group.update()
 
     p.display.update()
-p.quit()
